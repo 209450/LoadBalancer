@@ -1,0 +1,5 @@
+PyQt5~=5.11.3
+pip~=20.2.4
+certifi~=2019.9.11
+wheel~=0.33.4
+setuptools~=41.6.0
