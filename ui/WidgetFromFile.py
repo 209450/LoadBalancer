@@ -4,10 +4,14 @@ from PyQt5 import uic
 
 
 class WidgetFromFile:
-    def load_UI(self, ui_path):
-        uic.loadUi(ui_path, self)
+    __config_parser_path = "ui/config.ini"
 
-    def load_config_parser(self, config_parser_path):
+    @staticmethod
+    def load_ui(parent, ui_path):
+        uic.loadUi(ui_path, parent)
+
+    @staticmethod
+    def load_config_parser():
         config = configparser.ConfigParser()
-        config.read(config_parser_path)
+        config.read(WidgetFromFile.__config_parser_path)
         return config
