@@ -8,5 +8,3 @@ class Client:
         self.files = []
 
         self.waited_time = 0
-
-
