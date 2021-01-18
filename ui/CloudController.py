@@ -22,7 +22,5 @@ class CloudController:
             size = random.randint(min_size, max_size)
             files.append(File(name, size))
 
-        client = self.model.upload_files(files)
-        print(self.uploading_clients)
-        return client
+        return self.model.upload_files(files)
 

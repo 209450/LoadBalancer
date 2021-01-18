@@ -15,6 +15,7 @@ class MainWindow(QMainWindow):
 
         self.client_table_model = QStandardItemModel()
         self.init_client_table_view()
+        self
 
         self.init_add_random_client_form()
 
@@ -42,10 +43,10 @@ class MainWindow(QMainWindow):
         min_size = int(self.minFileSizeLineEdit.text())
         max_size = int(self.maxFileSizeLineEdit.text())
 
-        client = self.controller.random_files(min_files, max_files, min_size, max_size)
-        item = QStandardItem(str(client.client_id))
-        item1 = QStandardItem(' '.join([str(i) for i in client.files]))
-        self.client_table_model.appendRow([item, item1])
+        client = self.controller.random_upload(min_files, max_files, min_size, max_size)
+        client_id = QStandardItem(str(client.client_id))
+        files = QStandardItem(' '.join([str(i) for i in client.files]))
+        self.client_table_model.appendRow([client_id, files])
 
-        # print(self.client_table_model.findItems("1", 0))
+
 
