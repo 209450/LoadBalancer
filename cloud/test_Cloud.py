@@ -19,9 +19,9 @@ def random_file():
 
 if __name__ == '__main__':
     cloud = Cloud()
-    cloud.start_cloud()
+    cloud.start()
 
-    for i in range(20):
+    for i in range(2):
         files_number = random.randint(1, 3)
         random_files = [random_file() for j in range(files_number)]
         print(random_files)
@@ -38,3 +38,4 @@ if __name__ == '__main__':
     #     random_files = [random_file() for j in range(files_number)]
     #     print(random_files)
     #     cloud.upload_files(random_files)
+

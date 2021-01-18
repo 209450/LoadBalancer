@@ -74,11 +74,15 @@ class Cloud:
         self._uploading_clients = []
         self.number_uploaded_clients = 0
 
+        self.upload_thread = None
         self.upload_event = threading.Event()
 
-    def start_cloud(self):
-        executor = ThreadPoolExecutor()
-        executor.submit(upload_observer_worker, self.upload_event, self._threads_number, self._uploading_clients)
+    def start(self):
+        self.upload_thread = threading.Thread(target=upload_observer_worker,
+                                              args=(self.upload_event, self._threads_number,
+                                                    self._uploading_clients))
+        self.upload_thread.daemon = True
+        self.upload_thread.start()
 
     def upload_files(self, files):
         self.number_uploaded_clients = self.number_uploaded_clients + 1
