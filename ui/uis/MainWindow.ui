@@ -108,7 +108,6 @@
            </widget>
           </item>
          </layout>
-         <zorder>clientListView</zorder>
          <zorder>transferProgressBar</zorder>
          <zorder>label_2</zorder>
          <zorder>userLineEdit</zorder>
@@ -466,15 +465,39 @@
        <string>Klienci</string>
       </property>
       <layout class="QGridLayout" name="gridLayout_2">
-       <item row="1" column="0">
-        <widget class="QPushButton" name="addClientPushButton">
+       <item row="2" column="0">
+        <widget class="QLabel" name="label_5">
          <property name="text">
-          <string>Dodaj Użytkownika</string>
+          <string>Maksymalny rozmiar plików</string>
          </property>
         </widget>
        </item>
-       <item row="0" column="0">
-        <widget class="QListView" name="clientListView"/>
+       <item row="2" column="1">
+        <widget class="QLineEdit" name="lineEdit"/>
+       </item>
+       <item row="3" column="1">
+        <widget class="QPushButton" name="addClientPushButton">
+         <property name="text">
+          <string>Dodaj losowego użytkownika</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <widget class="QLabel" name="label">
+         <property name="text">
+          <string>Maksymalna liczba plików</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="QLineEdit" name="lineEdit_2"/>
+       </item>
+       <item row="0" column="0" colspan="2">
+        <widget class="QTableView" name="clientTableView">
+         <attribute name="horizontalHeaderStretchLastSection">
+          <bool>true</bool>
+         </attribute>
+        </widget>
        </item>
       </layout>
      </widget>
