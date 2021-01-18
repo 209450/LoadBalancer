@@ -6,6 +6,8 @@ import random
 
 from cloud.Client import Client
 
+file_speed_transfer = 1000
+
 
 def upload_worker(thread_id, uploading_clients, upload_lock):
     with upload_lock:
@@ -13,13 +15,33 @@ def upload_worker(thread_id, uploading_clients, upload_lock):
         print(f"Thread {thread_id}: start, client_id: {client_id}, uploading: {file}")
 
     # writing file simulation
-    time.sleep(2 * random.random())
+    time.sleep(file.size / file_speed_transfer)
     print(f"Thread {thread_id}: end")
 
 
-def auction_worker(auction_event, threads_number, uploading_clients):
+def make_auction(clients):
+    print("auction")
+
+    # counting weights
+    weights = []
+    for client in clients:
+        weight = 0
+
+        for file in client.files:
+            weight = weight + np.reciprocal(file.size / file_speed_transfer)
+        weight = weight + client.count_waited_time()
+
+        weights.append(weight)
+
+    chosen_client_index = np.argmax(np.array(weights))
+    chosen_client = clients[chosen_client_index]
+    client_id, file = chosen_client.client_id, chosen_client.files.pop()
+    return client_id, file
+
+
+def upload_observer_worker(upload_event, threads_number, uploading_clients):
     # while not auction_event.isSet():
-    while auction_event.wait():
+    while upload_event.wait():
 
         print("upload started")
 
@@ -43,24 +65,7 @@ def auction_worker(auction_event, threads_number, uploading_clients):
 
         print("upload ended")
 
-        auction_event.clear()
-
-
-def make_auction(clients):
-    print("auction")
-
-    # counting weights
-    weights = []
-    for client in clients:
-        weight = 0
-
-        weights.append(weight)
-
-    chosen_client_index = np.argmax(np.array(weights))
-    chosen_client = clients[chosen_client_index]
-
-    client_id, file = chosen_client.client_id, chosen_client.files.pop()
-    return client_id, file
+        upload_event.clear()
 
 
 class Cloud:
@@ -69,11 +74,11 @@ class Cloud:
         self._uploading_clients = []
         self.number_uploaded_clients = 0
 
-        self.auction_event = threading.Event()
+        self.upload_event = threading.Event()
 
     def start_cloud(self):
         executor = ThreadPoolExecutor()
-        executor.submit(auction_worker, self.auction_event, self._threads_number, self._uploading_clients)
+        executor.submit(upload_observer_worker, self.upload_event, self._threads_number, self._uploading_clients)
 
     def upload_files(self, files):
         self.number_uploaded_clients = self.number_uploaded_clients + 1
@@ -82,4 +87,4 @@ class Cloud:
         client.files = files
         self._uploading_clients.append(client)
 
-        self.auction_event.set()
+        self.upload_event.set()
