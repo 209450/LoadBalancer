@@ -465,42 +465,49 @@
        <string>Klienci</string>
       </property>
       <layout class="QGridLayout" name="gridLayout_2">
-       <item row="2" column="1">
+       <item row="2" column="0">
+        <widget class="QLabel" name="label">
+         <property name="text">
+          <string>Maksymalna liczba plików</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="1">
         <widget class="QLineEdit" name="minFileSizeLineEdit">
          <property name="text">
           <string>1000</string>
          </property>
         </widget>
        </item>
-       <item row="2" column="0">
+       <item row="3" column="0">
         <widget class="QLabel" name="label_6">
          <property name="text">
           <string>Minimalny rozmiar plików</string>
          </property>
         </widget>
        </item>
-       <item row="3" column="1">
+       <item row="4" column="1">
         <widget class="QLineEdit" name="maxFileSizeLineEdit">
          <property name="text">
           <string>10000</string>
          </property>
         </widget>
        </item>
-       <item row="1" column="1">
+       <item row="2" column="1">
         <widget class="QLineEdit" name="maxFileNumberLineEdit">
          <property name="text">
           <string>3</string>
          </property>
         </widget>
        </item>
-       <item row="3" column="0">
+       <item row="4" column="0">
         <widget class="QLabel" name="label_5">
          <property name="text">
           <string>Maksymalny rozmiar plików</string>
          </property>
         </widget>
        </item>
-       <item row="4" column="1">
+       <item row="5" column="1">
         <widget class="QPushButton" name="addRandomClientPushButton">
          <property name="text">
           <string>Dodaj losowego użytkownika</string>
@@ -515,9 +522,16 @@
         </widget>
        </item>
        <item row="1" column="0">
-        <widget class="QLabel" name="label">
+        <widget class="QLabel" name="label_7">
          <property name="text">
-          <string>Maksymalna liczba plików</string>
+          <string>Minimalna liczba plików</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="QLineEdit" name="minFileNumberLineEdit">
+         <property name="text">
+          <string>1</string>
          </property>
         </widget>
        </item>

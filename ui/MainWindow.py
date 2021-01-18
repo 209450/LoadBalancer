@@ -30,17 +30,19 @@ class MainWindow(QMainWindow):
         # self.client_table_model.appendRow([item, item1])
 
     def init_add_random_client_form(self):
+        self.minFileNumberLineEdit.setValidator(QIntValidator(1, 1000000))
         self.maxFileNumberLineEdit.setValidator(QIntValidator(1, 1000000))
         self.minFileSizeLineEdit.setValidator(QIntValidator(1, 1000000))
         self.maxFileSizeLineEdit.setValidator(QIntValidator(1, 1000000))
         self.addRandomClientPushButton.clicked.connect(self.add_random_client_push_button_handler)
 
     def add_random_client_push_button_handler(self):
+        min_files = int(self.minFileNumberLineEdit.text())
         max_files = int(self.maxFileNumberLineEdit.text())
         min_size = int(self.minFileSizeLineEdit.text())
         max_size = int(self.maxFileSizeLineEdit.text())
 
-        client = self.controller.random_upload(max_files, min_size, max_size)
+        client = self.controller.random_files(min_files, max_files, min_size, max_size)
         item = QStandardItem(str(client.client_id))
         item1 = QStandardItem(' '.join([str(i) for i in client.files]))
         self.client_table_model.appendRow([item, item1])

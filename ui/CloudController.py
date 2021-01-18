@@ -13,8 +13,8 @@ class CloudController:
     def start_cloud(self):
         self.model.start()
 
-    def random_upload(self, max_files, min_size, max_size):
-        files_number = random.randint(1, max_files)
+    def random_upload(self, min_files, max_files, min_size, max_size):
+        files_number = random.randint(min_files, max_files)
 
         files = []
         for i in range(files_number):

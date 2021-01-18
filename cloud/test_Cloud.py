@@ -11,31 +11,38 @@ from cloud.File import File
 names = "abcdef"
 
 
-def random_file():
-    name = names[random.randint(0, len(names) - 1)]
-    size = random.randint(0, 10000)
-    return File(name, size)
+def random_files(min_files, max_files, min_size, max_size):
+    files_number = random.randint(min_files, max_files)
+
+    files = []
+    for i in range(files_number):
+        name = names[random.randint(0, len(names) - 1)]
+        size = random.randint(min_size, max_size)
+        files.append(File(name, size))
+
+    return files
 
 
 if __name__ == '__main__':
     cloud = Cloud()
     cloud.start()
 
-    for i in range(2):
-        files_number = random.randint(1, 3)
-        random_files = [random_file() for j in range(files_number)]
-        print(random_files)
-        cloud.upload_files(random_files)
+    # 25 random
+    for i in range(25):
+        files = random_files(1, 3, 1000, 10000)
+        print(files)
+        cloud.upload_files(files)
         # print(i)
+
+    # # 50 small, 1 big
+    # for i in range(1):
+    #     files = random_files(50, 50, 1000, 10000)
+    #     print(files)
+    #     cloud.upload_files(files)
+    #     # print(i)
     #
-    # cloud.upload_files([File('a', 3000), File('a', 4000)])
-    # cloud.upload_files([File('a', 1000), File('b', 1000), File('c', 1000), File('d', 1000), File('a', 1000), File('a', 1000)])
-
-    # sleep(5)
-    # # print("eee")
-    # for i in range(2):
-    #     files_number = random.randint(1, 3)
-    #     random_files = [random_file() for j in range(files_number)]
-    #     print(random_files)
-    #     cloud.upload_files(random_files)
-
+    # for i in range(1):
+    #     files = random_files(1, 1, 100000, 100000)
+    #     print(files)
+    #     cloud.upload_files(files)
+    #     # print(i)

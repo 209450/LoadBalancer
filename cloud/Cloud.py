@@ -29,12 +29,14 @@ def make_auction(clients):
 
         for file in client.files:
             weight = weight + np.reciprocal(file.size / file_speed_transfer)
-        weight = weight + client.count_waited_time()
+        weight = weight + client.count_waited_time() - client.won_auction_times
 
         weights.append(weight)
 
     chosen_client_index = np.argmax(np.array(weights))
     chosen_client = clients[chosen_client_index]
+
+    chosen_client.won_auction_times = chosen_client.won_auction_times + 1
     client_id, file = chosen_client.client_id, chosen_client.files.pop()
     return client_id, file
 
