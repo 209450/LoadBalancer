@@ -46,22 +46,23 @@ def upload_observer_worker(upload_event, threads_number, uploading_clients):
         print("upload started")
 
         upload_lock = threading.Lock()
-        with ThreadPoolExecutor(threads_number) as executor:
-            futures = []
-            while len(uploading_clients) > 0:
+        # with ThreadPoolExecutor(threads_number) as executor:
+        executor = ThreadPoolExecutor(threads_number)
+        futures = []
+        while len(uploading_clients) > 0 or len(futures) > 0:
 
-                # remove done futures
-                for i, future in enumerate(futures):
-                    if future.done() is True:
-                        futures.pop(i)
+            # remove done futures
+            for i, future in enumerate(futures):
+                if future.done() is True:
+                    futures.pop(i)
 
-                # remove empty clients
-                for i, client in enumerate(uploading_clients):
-                    if len(client.files) is 0:
-                        uploading_clients.pop(i)
+            # remove empty clients
+            for i, client in enumerate(uploading_clients):
+                if len(client.files) is 0:
+                    uploading_clients.pop(i)
 
-                if len(futures) < threads_number:
-                    futures.append(executor.submit(upload_worker, 0, uploading_clients, upload_lock))
+            if len(futures) < threads_number and len(uploading_clients) > 0:
+                futures.append(executor.submit(upload_worker, 0, uploading_clients, upload_lock))
 
         print("upload ended")
 
@@ -71,7 +72,7 @@ def upload_observer_worker(upload_event, threads_number, uploading_clients):
 class Cloud:
     def __init__(self, threads_number=5):
         self._threads_number = threads_number
-        self._uploading_clients = []
+        self.uploading_clients = []
         self.number_uploaded_clients = 0
 
         self.upload_thread = None
@@ -80,7 +81,7 @@ class Cloud:
     def start(self):
         self.upload_thread = threading.Thread(target=upload_observer_worker,
                                               args=(self.upload_event, self._threads_number,
-                                                    self._uploading_clients))
+                                                    self.uploading_clients))
         self.upload_thread.daemon = True
         self.upload_thread.start()
 
@@ -89,6 +90,7 @@ class Cloud:
         client = Client(self.number_uploaded_clients)
 
         client.files = files
-        self._uploading_clients.append(client)
+        self.uploading_clients.append(client)
 
         self.upload_event.set()
+        return client

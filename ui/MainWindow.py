@@ -40,7 +40,10 @@ class MainWindow(QMainWindow):
         min_size = int(self.minFileSizeLineEdit.text())
         max_size = int(self.maxFileSizeLineEdit.text())
 
-        index, files = self.controller.random_upload(max_files, min_size, max_size)
-        item = QStandardItem(str(index))
-        item1 = QStandardItem(''.join([str(i) for i in files]))
+        client = self.controller.random_upload(max_files, min_size, max_size)
+        item = QStandardItem(str(client.client_id))
+        item1 = QStandardItem(' '.join([str(i) for i in client.files]))
         self.client_table_model.appendRow([item, item1])
+
+        # print(self.client_table_model.findItems("1", 0))
+
