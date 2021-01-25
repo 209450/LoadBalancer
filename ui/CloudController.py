@@ -23,4 +23,3 @@ class CloudController:
             files.append(File(name, size))
 
         return self.model.upload_files(files)
-

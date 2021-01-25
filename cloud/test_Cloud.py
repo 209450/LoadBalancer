@@ -27,12 +27,12 @@ if __name__ == '__main__':
     cloud = Cloud()
     cloud.start()
 
-    # 25 random
-    for i in range(25):
-        files = random_files(1, 3, 1000, 10000)
-        print(files)
-        cloud.upload_files(files)
-        # print(i)
+    # # 25 random
+    # for i in range(25):
+    #     files = random_files(1, 3, 1000, 10000)
+    #     print(files)
+    #     cloud.upload_files(files)
+    #     # print(i)
 
     # # 50 small, 1 big
     # for i in range(1):
@@ -43,6 +43,20 @@ if __name__ == '__main__':
     #
     # for i in range(1):
     #     files = random_files(1, 1, 100000, 100000)
+    #     print(files)
+    #     cloud.upload_files(files)
+    #     # print(i)
+
+    # # 25 small, 25 big
+    # for i in range(25):
+    #     files = random_files(10, 10, 1000, 5000)
+    #     print(files)
+    #     cloud.upload_files(files)
+    #     # print(i)
+    #
+    # # 25 random
+    # for i in range(25):
+    #     files = random_files(10, 10, 10000, 20000)
     #     print(files)
     #     cloud.upload_files(files)
     #     # print(i)

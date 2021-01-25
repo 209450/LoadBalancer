@@ -1,3 +1,4 @@
+from PyQt5.QtCore import pyqtSlot
 from PyQt5.QtGui import QStandardItemModel, QStandardItem, QIntValidator
 from PyQt5.QtWidgets import QMainWindow
 
@@ -15,20 +16,19 @@ class MainWindow(QMainWindow):
 
         self.client_table_model = QStandardItemModel()
         self.init_client_table_view()
-        self
-
         self.init_add_random_client_form()
-
         self.controller.start_cloud()
 
+        self.model.uploading_clients_changed.connect(self.update_client_table_model)
+        # self.model.uploading_clients_changed = self.eee
+
     def init_client_table_view(self):
-        labels = self.config_parser["MainWindow"]["client_view_headers"].split()
-        self.client_table_model.setHorizontalHeaderLabels(labels)
+        self.init_client_table_view_headers()
         self.clientTableView.setModel(self.client_table_model)
 
-        # item = QStandardItem("aaa")
-        # item1 = QStandardItem("bbb")
-        # self.client_table_model.appendRow([item, item1])
+    def init_client_table_view_headers(self):
+        labels = self.config_parser["MainWindow"]["client_view_headers"].split()
+        self.client_table_model.setHorizontalHeaderLabels(labels)
 
     def init_add_random_client_form(self):
         self.minFileNumberLineEdit.setValidator(QIntValidator(1, 1000000))
@@ -44,9 +44,17 @@ class MainWindow(QMainWindow):
         max_size = int(self.maxFileSizeLineEdit.text())
 
         client = self.controller.random_upload(min_files, max_files, min_size, max_size)
-        client_id = QStandardItem(str(client.client_id))
-        files = QStandardItem(' '.join([str(i) for i in client.files]))
-        self.client_table_model.appendRow([client_id, files])
+        self.update_client_table_model()
 
+    @pyqtSlot()
+    def update_client_table_model(self):
+        table_model = self.client_table_model
+        clients = self.controller.uploading_clients
 
-
+        table_model.clear()
+        self.init_client_table_view_headers()
+        for i, client in enumerate(clients):
+            client_id = QStandardItem(str(client.client_id))
+            files = QStandardItem(' '.join([str(i) for i in client.files]))
+            table_model.setItem(i, 0, client_id)
+            table_model.setItem(i, 1, files)

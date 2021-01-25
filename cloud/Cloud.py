@@ -1,22 +1,32 @@
+import copy
 import threading
 import time
 import numpy as np
 from concurrent.futures import ThreadPoolExecutor
 import random
 
+from PyQt5.QtCore import pyqtSignal, QObject
+
 from cloud.Client import Client
+from cloud.File import File
 
 file_speed_transfer = 1000
 
 
-def upload_worker(thread_id, uploading_clients, upload_lock):
+def upload_worker(thread_ids, uploading_clients, upload_lock, *callbacks):
+    thread_id = None
     with upload_lock:
         client_id, file = make_auction(uploading_clients)
+        thread_id = thread_ids.pop()
+
+        # uploading_clients_changed
+        callbacks[0][0].emit()
         print(f"Thread {thread_id}: start, client_id: {client_id}, uploading: {file}")
 
     # writing file simulation
     time.sleep(file.size / file_speed_transfer)
     print(f"Thread {thread_id}: end")
+    thread_ids.append(thread_id)
 
 
 def make_auction(clients):
@@ -41,7 +51,7 @@ def make_auction(clients):
     return client_id, file
 
 
-def upload_observer_worker(upload_event, threads_number, uploading_clients):
+def upload_observer_worker(upload_event, threads_number, uploading_clients, *callbacks):
     # while not auction_event.isSet():
     while upload_event.wait():
 
@@ -51,6 +61,7 @@ def upload_observer_worker(upload_event, threads_number, uploading_clients):
         # with ThreadPoolExecutor(threads_number) as executor:
         executor = ThreadPoolExecutor(threads_number)
         futures = []
+        threads_indexes = list(range(threads_number))
         while len(uploading_clients) > 0 or len(futures) > 0:
 
             # remove done futures
@@ -64,15 +75,22 @@ def upload_observer_worker(upload_event, threads_number, uploading_clients):
                     uploading_clients.pop(i)
 
             if len(futures) < threads_number and len(uploading_clients) > 0:
-                futures.append(executor.submit(upload_worker, 0, uploading_clients, upload_lock))
+                future = executor.submit(upload_worker, threads_indexes, uploading_clients, upload_lock, callbacks)
+                futures.append(future)
 
         print("upload ended")
 
         upload_event.clear()
 
 
-class Cloud:
+class Cloud(QObject):
+    uploading_clients_changed = pyqtSignal()
+    thread_stared_upload = None
+    thread_ended_upload = None
+
     def __init__(self, threads_number=5):
+        super().__init__()
+
         self._threads_number = threads_number
         self.uploading_clients = []
         self.number_uploaded_clients = 0
@@ -80,10 +98,15 @@ class Cloud:
         self.upload_thread = None
         self.upload_event = threading.Event()
 
+        # self.uploading_clients_changed = None
+        # self.thread_stared_upload = None
+        # self.thread_ended_upload = None
+
     def start(self):
         self.upload_thread = threading.Thread(target=upload_observer_worker,
                                               args=(self.upload_event, self._threads_number,
-                                                    self.uploading_clients))
+                                                    self.uploading_clients, self.uploading_clients_changed,
+                                                    self.thread_stared_upload, self.thread_ended_upload))
         self.upload_thread.daemon = True
         self.upload_thread.start()
 
