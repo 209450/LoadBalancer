@@ -21,17 +21,13 @@ def upload_worker(thread_ids, uploading_clients, upload_lock, *callbacks):
 
         # uploading_clients_changed
         callbacks[0][0].emit()
-        print(f"Thread {thread_id}: start, client_id: {client_id}, uploading: {file}")
-
-    # thread_stared_upload
-    callbacks[0][1].emit(thread_id, client_id, file)
+        # thread_stared_upload
+        callbacks[0][1].emit(thread_id, client_id, file)
 
     # writing file simulation
     time.sleep(file.size / file_speed_transfer)
-
     # thread_ended_upload
-    callbacks[0][2].emit()
-    print(f"Thread {thread_id}: end")
+    callbacks[0][2].emit(thread_id)
     thread_ids.append(thread_id)
 
 

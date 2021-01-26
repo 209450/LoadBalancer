@@ -1,7 +1,8 @@
-from PyQt5.QtCore import pyqtSlot
-from PyQt5.QtGui import QStandardItemModel, QStandardItem, QIntValidator
+from PyQt5.QtCore import pyqtSlot, Qt
+from PyQt5.QtGui import QStandardItemModel, QStandardItem, QIntValidator, QPalette
 from PyQt5.QtWidgets import QMainWindow, QWidget
 
+from cloud.File import File
 from ui.WidgetFromFile import WidgetFromFile
 
 
@@ -20,6 +21,8 @@ class MainWindow(QMainWindow):
         self.controller.start_cloud()
 
         self.model.uploading_clients_changed.connect(self.update_client_table_model)
+        self.model.thread_stared_upload.connect(self.update_thread_widget_on_thread_start_upload)
+        self.model.thread_ended_upload.connect(self.update_thread_widget_on_thread_stop_upload)
 
         self.threads_widgets = {}
         self.init_threads_widgets()
@@ -72,6 +75,19 @@ class MainWindow(QMainWindow):
             table_model.setItem(i, 0, client_id)
             table_model.setItem(i, 1, files)
 
+    @pyqtSlot(int, int, File)
+    def update_thread_widget_on_thread_start_upload(self, thread_id, client_id, file):
+        # print(f"Thread {thread_id}: start, client_id: {client_id}, uploading: {file}")
+        print(thread_id)
+        thread_widget = self.threads_widgets[thread_id]
+        thread_widget.fill_form(client_id, file.name, file.size)
+
+    @pyqtSlot(int)
+    def update_thread_widget_on_thread_stop_upload(self, thread_id):
+        # print(f"Thread {thread_id}: end")
+        thread_widget = self.threads_widgets[thread_id]
+        thread_widget.free_from()
+
 
 class ThreadWidget(QWidget):
     def __init__(self, title, *args, **kwargs):
@@ -81,3 +97,25 @@ class ThreadWidget(QWidget):
         WidgetFromFile.load_ui(self, self.config_parser["ThreadWidget"]['ui_path'])
 
         self.threadGroupBox.setTitle(title)
+        self.free_from()
+
+    def fill_form(self, client_id, file_name, file_size):
+        self.statusQLable.setText("Zajęty")
+        self.change_label_color(self.statusQLable, Qt.red)
+
+        self.userLineEdit.setText(str(client_id))
+        self.fileLineEdit.setText(file_name)
+        self.sizeLineEdit.setText(str(file_size))
+
+    def free_from(self):
+        self.statusQLable.setText("Wolny")
+        self.change_label_color(self.statusQLable, Qt.darkGreen)
+
+        self.userLineEdit.clear()
+        self.fileLineEdit.clear()
+        self.sizeLineEdit.clear()
+
+    def change_label_color(self, label, color):
+        pallete = QPalette()
+        pallete.setColor(QPalette.WindowText, color)
+        label.setPalette(pallete)
