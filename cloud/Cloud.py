@@ -23,8 +23,14 @@ def upload_worker(thread_ids, uploading_clients, upload_lock, *callbacks):
         callbacks[0][0].emit()
         print(f"Thread {thread_id}: start, client_id: {client_id}, uploading: {file}")
 
+    # thread_stared_upload
+    callbacks[0][1].emit(thread_id, client_id, file)
+
     # writing file simulation
     time.sleep(file.size / file_speed_transfer)
+
+    # thread_ended_upload
+    callbacks[0][2].emit()
     print(f"Thread {thread_id}: end")
     thread_ids.append(thread_id)
 
@@ -85,8 +91,8 @@ def upload_observer_worker(upload_event, threads_number, uploading_clients, *cal
 
 class Cloud(QObject):
     uploading_clients_changed = pyqtSignal()
-    thread_stared_upload = None
-    thread_ended_upload = None
+    thread_stared_upload = pyqtSignal(int, int, File)
+    thread_ended_upload = pyqtSignal(int)
 
     def __init__(self, threads_number=5):
         super().__init__()

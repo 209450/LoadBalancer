@@ -1,6 +1,6 @@
 from PyQt5.QtCore import pyqtSlot
 from PyQt5.QtGui import QStandardItemModel, QStandardItem, QIntValidator
-from PyQt5.QtWidgets import QMainWindow
+from PyQt5.QtWidgets import QMainWindow, QWidget
 
 from ui.WidgetFromFile import WidgetFromFile
 
@@ -20,7 +20,20 @@ class MainWindow(QMainWindow):
         self.controller.start_cloud()
 
         self.model.uploading_clients_changed.connect(self.update_client_table_model)
-        # self.model.uploading_clients_changed = self.eee
+
+        self.threads_widgets = {}
+        self.init_threads_widgets()
+        print(self.threads_widgets)
+
+    def init_threads_widgets(self):
+        layout = self.cloudGroupBox.layout()
+        threads = self.threads_widgets
+
+        threads_number = int(self.config_parser["MainWindow"]["threads_widgets"])
+        for i in range(threads_number):
+            thread_widget = ThreadWidget(f"Wątek {i}")
+            threads[i] = thread_widget
+            layout.addWidget(thread_widget)
 
     def init_client_table_view(self):
         self.init_client_table_view_headers()
@@ -58,3 +71,13 @@ class MainWindow(QMainWindow):
             files = QStandardItem(' '.join([str(i) for i in client.files]))
             table_model.setItem(i, 0, client_id)
             table_model.setItem(i, 1, files)
+
+
+class ThreadWidget(QWidget):
+    def __init__(self, title, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.config_parser = WidgetFromFile.load_config_parser()
+        WidgetFromFile.load_ui(self, self.config_parser["ThreadWidget"]['ui_path'])
+
+        self.threadGroupBox.setTitle(title)
